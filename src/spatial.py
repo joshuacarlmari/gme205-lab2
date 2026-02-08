@@ -50,3 +50,19 @@ class Point:
 
         distance = R * c
         return distance
+    
+
+    # ------------------------------------------------------------------
+        # Class method (constructing objects from data)
+        # ------------------------------------------------------------------
+
+    @classmethod
+    def from_row(cls, row):
+        return cls( 
+            id=str(row["id"]),
+            lon=float(row["lon"]),
+            lat=float(row["lat"]),
+            name=row.get("name"),
+            tag=row.get("tag"),
+        )
+
