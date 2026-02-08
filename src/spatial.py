@@ -1,4 +1,5 @@
 import math
+import csv
 class Point:
     def __init__(self, id, lon, lat, name=None, tag=None):
         if not (-180 <= lon <= 180):
@@ -10,6 +11,8 @@ class Point:
         self.id = id
         self.lon = lon
         self.lat = lat
+        self.name = name
+        self.tag = tag
 
     # ------------------------------------------------------------------
     # Instance methods (behavior belongs to the object)
@@ -68,4 +71,60 @@ class Point:
 
     def is_poi(self):
         return (self.tag or "").lower() == "poi"
+    
+import csv
+from typing import List, Tuple
+from spatial import Point 
+
+class PointSet:
+    def __init__(self, points: List[Point] = None):
+        """
+        Initialize a PointSet with a list of Point objects.
+        """
+        self.points = points if points is not None else []
+
+
+    @classmethod
+    def from_csv(cls, path: str) -> "PointSet":
+        """
+        Reads a CSV file, creates Point objects using Point.from_row,
+        ignores invalid rows, and returns a PointSet instance.
+        """
+        points = []
+        with open(path, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    point = Point.from_row(row)
+                    points.append(point)
+                except Exception as e:
+                 
+                    print(f"Skipping invalid row: {row}, reason: {e}")
+        return cls(points)
+
+
+    def count(self) -> int:
+        return len(self.points)
+
+
+    def bbox(self) -> Tuple[float, float, float, float]:
+        if not self.points:
+            return (0.0, 0.0, 0.0, 0.0)  # optional: could raise Exception
+        lons = [p.lon for p in self.points]
+        lats = [p.lat for p in self.points]
+        return (min(lons), min(lats), max(lons), max(lats))
+
+
+    def filter_by_tag(self, tag: str) -> "PointSet":
+        """
+        Returns a new PointSet with only points that have the given tag.
+        Case-insensitive.
+        """
+        filtered_points = [p for p in self.points if (p.tag or "").lower() == tag.lower()]
+        return PointSet(filtered_points)
+
+    def __repr__(self):
+        return f"PointSet({len(self.points)} points)"
+
+
                               
