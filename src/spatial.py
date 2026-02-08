@@ -66,3 +66,6 @@ class Point:
             tag=row.get("tag"),
         )
 
+    def is_poi(self):
+        return (self.tag or "").lower() == "poi"
+                              
