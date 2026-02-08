@@ -87,8 +87,7 @@ class PointSet:
     @classmethod
     def from_csv(cls, path: str) -> "PointSet":
         """
-        Reads a CSV file, creates Point objects using Point.from_row,
-        ignores invalid rows, and returns a PointSet instance.
+        Reads a CSV file
         """
         points = []
         with open(path, newline="", encoding="utf-8") as f:
@@ -109,17 +108,14 @@ class PointSet:
 
     def bbox(self) -> Tuple[float, float, float, float]:
         if not self.points:
-            return (0.0, 0.0, 0.0, 0.0)  # optional: could raise Exception
+            return (0.0, 0.0, 0.0, 0.0) 
         lons = [p.lon for p in self.points]
         lats = [p.lat for p in self.points]
         return (min(lons), min(lats), max(lons), max(lats))
 
 
     def filter_by_tag(self, tag: str) -> "PointSet":
-        """
-        Returns a new PointSet with only points that have the given tag.
-        Case-insensitive.
-        """
+      
         filtered_points = [p for p in self.points if (p.tag or "").lower() == tag.lower()]
         return PointSet(filtered_points)
 
